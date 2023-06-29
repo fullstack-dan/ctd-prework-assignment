@@ -114,6 +114,12 @@ table {
     height: 350px;
     /* box-shadow: -5px 5px 5px lightgray */
 }
+
+.musicBox img {
+    max-width: 100%;
+    height: auto;
+  }
+
 .musicBox>* {
     position: relative;
     top: 0;
@@ -124,6 +130,7 @@ table {
 }
 
 .musicBox>*:hover {
+    cursor: pointer;
     top: -5px;
     right: -2px;
 }
@@ -157,7 +164,6 @@ table {
     align-items: center;
     gap: 8px;
 }
-
 
 
 .section {
@@ -234,6 +240,34 @@ table {
 }
 .icon:hover {
     bottom: -5px;
+}
+
+#album-side {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 16px;
+}
+
+#album-display {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+
+}
+
+#album-text-info {
+    text-align: left;
+    width: 100%;
+}
+
+#album-art {
+    max-width: 300px;
+    max-height: 300px;
+    height: auto;
+    border-radius: 5px;
 }
 
 @keyframes slideInFromBottom {
