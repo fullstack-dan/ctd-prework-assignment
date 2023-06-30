@@ -114,6 +114,7 @@ function populateAlbumDisplay(data) {
 }
 
 function populateArtistDisplay(artistId) {
+  var artistInfo = {};
   fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
       headers: {
         'Authorization': 'Bearer ' + accessToken
@@ -123,8 +124,43 @@ function populateArtistDisplay(artistId) {
       return response.json()
     })
     .then(data => {
+      artistInfo = data;
       console.log(data);
+      const artistSide = document.querySelector('#artist-side');
+      while (artistSide.firstChild) {
+        artistSide.removeChild(artistSide.firstChild);
+      }
+
+      const artistArt = document.createElement('img');
+      artistArt.id = 'artist-art';
+
+      const artistText = document.createElement('div');
+
+      const artistName = document.createElement('h1');
+      const artistFollowers = document.createElement('p');
+      const artistPopularity = document.createElement('p');
+      const artistGenres = document.createElement('p');
+
+      artistText.id = 'artist-text-info';
+
+      artistText.appendChild(artistName);
+      artistText.appendChild(artistFollowers);
+      artistText.appendChild(artistPopularity);
+      artistText.appendChild(artistGenres);
+
+      artistArt.src = artistInfo.images[0].url;
+      artistName.innerHTML = artistInfo.name;
+      artistFollowers.innerHTML = artistInfo.followers.total + ' followers';
+      artistPopularity.innerHTML = artistInfo.popularity + ' popularity';
+      artistGenres.innerHTML = artistInfo.genres.join(', ');
+
+      artistSide.appendChild(artistArt);
+      artistSide.appendChild(artistText);
+      
     })
+
+
+
 }
 
 musicBoxes.forEach(box => {
