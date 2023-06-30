@@ -1,5 +1,3 @@
-// import musicPage from "./musicPage";
-
 const clientId = '7a536f43424e4e1fad43dd3777470cad';
 const clientSecret = '333def59ecae428797f341d934b304fd';
 var accessToken = '';
@@ -18,7 +16,6 @@ fetch('https://accounts.spotify.com/api/token', {
   .then(response => response.json())
   .then(data => {
     accessToken = data.access_token;
-    console.log(accessToken);
   })
   .catch(error => {
     console.log(error);
@@ -56,7 +53,22 @@ function musicPage(album) {
       albumTitle.innerHTML = albumData.name;
       albumArtist.innerHTML = albumData.artists[0].name;
       albumYear.innerHTML = albumData.release_date.slice(0, 4);
-      albumTracks.innerHTML = '';
+
+      albumData.tracks.items.forEach(track => {
+        const trackDiv = document.createElement('li');
+        trackDiv.classList.add('track');
+        
+        const trackNumber = document.createElement('div');
+        trackNumber.innerHTML = track.track_number + '. ';
+        const trackName = document.createElement('div');
+        trackName.classList.add('track-name');
+        trackName.innerHTML = track.name;
+
+        trackDiv.appendChild(trackNumber);
+        trackDiv.appendChild(trackName);
+        albumTracks.appendChild(trackDiv);
+      })
+
       console.log(data);
     })
     .catch(error => {

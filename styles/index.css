@@ -270,6 +270,14 @@ table {
     border-radius: 5px;
 }
 
+.track {
+    display: flex;
+}
+.track>* {
+    font-size: smaller;
+    text-align: left;
+}
+
 @keyframes slideInFromBottom {
     0% {
         opacity: 0%;
