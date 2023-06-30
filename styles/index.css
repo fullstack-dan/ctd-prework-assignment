@@ -275,6 +275,20 @@ table {
     border-radius: 5px;
 }
 
+#album-text-info>h1 {
+    font-family: 'KanitBold', Arial, sans-serif;
+    /* letter-spacing: -5px; */
+}
+#album-text-info>p {
+    font-size: 24px;
+
+}
+
+#expand-artist {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .track {
     display: flex;
 }

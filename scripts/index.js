@@ -30,15 +30,6 @@ const heroScrollIcon = document.querySelector('#heroScrollIcon');
 body.style.backgroundSize = 'cover';
 
 function musicPage(album) {
-
-  const albumDisplay = document.querySelector('#album-display');
-  const albumArt = document.querySelector('#album-art');
-  const albumTitle = document.querySelector('#album-title');
-  const albumArtist = document.querySelector('#album-artist');
-  const albumYear = document.querySelector('#album-year');
-  const albumTracks = document.querySelector('#album-tracks');
-
-  var albumData = {};
   fetch(`https://api.spotify.com/v1/albums/${album}`, {
       headers: {
         'Authorization': 'Bearer ' + accessToken
@@ -48,39 +39,92 @@ function musicPage(album) {
       return response.json()
     })
     .then(data => {
-      albumData = data;
-      albumArt.src = albumData.images[0].url;
-      albumTitle.innerHTML = albumData.name;
-      albumArtist.innerHTML = albumData.artists[0].name;
-      albumYear.innerHTML = albumData.release_date.slice(0, 4);
-
-      while(albumTracks.firstChild) {
-        albumTracks.removeChild(albumTracks.firstChild);
+      populateAlbumDisplay(data);
+      const artistSide = document.querySelector('#artist-side');
+      while (artistSide.firstChild) {
+        artistSide.removeChild(artistSide.firstChild);
       }
-
-      albumData.tracks.items.forEach(track => {
-        const trackDiv = document.createElement('li');
-        trackDiv.classList.add('track');
-        
-        const trackNumber = document.createElement('div');
-        trackNumber.innerHTML = track.track_number + '. ';
-        const trackName = document.createElement('div');
-        trackName.classList.add('track-name');
-        trackName.innerHTML = track.name;
-
-        trackDiv.appendChild(trackNumber);
-        trackDiv.appendChild(trackName);
-        albumTracks.appendChild(trackDiv);
+      const expandArtist = document.createElement('div');
+      expandArtist.textContent = 'Learn more about this artist!';
+      expandArtist.id = 'expand-artist';
+      expandArtist.addEventListener('click', () => {
+        populateArtistDisplay(data.artists[0].id);
       })
-
-      console.log(data);
+      artistSide.appendChild(expandArtist);
     })
     .catch(error => {
       console.log(error);
     })
 
-  
+}
 
+function populateAlbumDisplay(data) {
+  const albumSide = document.querySelector('#album-side');
+
+  while (albumSide.firstChild) {
+    albumSide.removeChild(albumSide.firstChild);
+  }
+
+  const albumArt = document.createElement('img');
+  albumArt.id = 'album-art';
+
+  const albumTitle = document.createElement('h1');
+  const albumArtist = document.createElement('p');
+  const albumYear = document.createElement('p');
+  const albumTracks = document.createElement('ol');
+  albumTracks.id = 'album-tracks';
+
+  const albumInfo = document.createElement('div');
+  const albumText = document.createElement('div');
+  albumText.id = 'album-text-info';
+
+  albumArt.src = data.images[0].url;
+  albumTitle.innerHTML = data.name;
+  albumArtist.innerHTML = data.artists[0].name;
+  albumYear.innerHTML = data.release_date.slice(0, 4);
+
+  albumText.appendChild(albumTitle);
+  albumText.appendChild(albumArtist);
+  albumText.appendChild(albumYear);
+
+  while (albumTracks.firstChild) {
+    albumTracks.removeChild(albumTracks.firstChild);
+  }
+
+  data.tracks.items.forEach(track => {
+    const trackDiv = document.createElement('li');
+    trackDiv.classList.add('track');
+
+    const trackNumber = document.createElement('div');
+    trackNumber.innerHTML = track.track_number + '. ';
+    const trackName = document.createElement('div');
+    trackName.classList.add('track-name');
+    trackName.innerHTML = track.name;
+
+    trackDiv.appendChild(trackNumber);
+    trackDiv.appendChild(trackName);
+    albumTracks.appendChild(trackDiv);
+  })
+
+  albumInfo.appendChild(albumArt);
+  albumInfo.appendChild(albumText);
+
+  albumSide.appendChild(albumInfo);
+  albumSide.appendChild(albumTracks);
+}
+
+function populateArtistDisplay(artistId) {
+  fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
+      headers: {
+        'Authorization': 'Bearer ' + accessToken
+      }
+    })
+    .then(response => {
+      return response.json()
+    })
+    .then(data => {
+      console.log(data);
+    })
 }
 
 musicBoxes.forEach(box => {
