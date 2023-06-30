@@ -53,7 +53,7 @@ html {
 body {
     color: white;
     background-color: #010015;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(../resources/images/comedy-genhashino.jpeg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(../resources/images/heroImage.jpg);
     background-position: center;
     background-repeat:initial;
     background-size: cover;
@@ -261,6 +261,11 @@ table {
 #album-text-info {
     text-align: left;
     width: 100%;
+}
+
+#album-text-info>* {
+    overflow-wrap: normal;
+    max-width: 300px;
 }
 
 #album-art {

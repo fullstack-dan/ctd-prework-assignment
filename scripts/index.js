@@ -54,6 +54,10 @@ function musicPage(album) {
       albumArtist.innerHTML = albumData.artists[0].name;
       albumYear.innerHTML = albumData.release_date.slice(0, 4);
 
+      while(albumTracks.firstChild) {
+        albumTracks.removeChild(albumTracks.firstChild);
+      }
+
       albumData.tracks.items.forEach(track => {
         const trackDiv = document.createElement('li');
         trackDiv.classList.add('track');
