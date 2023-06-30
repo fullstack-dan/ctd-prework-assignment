@@ -125,7 +125,7 @@ function populateArtistDisplay(artistId) {
     })
     .then(data => {
       artistInfo = data;
-      console.log(data);
+      // console.log(data);
       const artistSide = document.querySelector('#artist-side');
       while (artistSide.firstChild) {
         artistSide.removeChild(artistSide.firstChild);
@@ -156,7 +156,7 @@ function populateArtistDisplay(artistId) {
 
       artistSide.appendChild(artistArt);
       artistSide.appendChild(artistText);
-      
+
     })
 
 
