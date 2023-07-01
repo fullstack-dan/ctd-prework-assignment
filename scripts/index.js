@@ -24,10 +24,10 @@ fetch('https://accounts.spotify.com/api/token', {
 
 const body = document.querySelector('body');
 const musicBoxes = document.querySelectorAll('.musicBox');
-
+const searchBox = document.querySelector('#search-box');
+const searchButton = document.querySelector('#search-button');
+const searchSection = document.querySelector('#search');
 const heroScrollIcon = document.querySelector('#heroScrollIcon');
-
-body.style.backgroundSize = 'cover';
 
 function musicPage(album) {
   fetch(`https://api.spotify.com/v1/albums/${album}`, {
@@ -40,6 +40,8 @@ function musicPage(album) {
     })
     .then(data => {
       populateAlbumDisplay(data);
+
+      //display an option to learn more about the artist
       const artistSide = document.querySelector('#artist-side');
       while (artistSide.firstChild) {
         artistSide.removeChild(artistSide.firstChild);
@@ -61,6 +63,7 @@ function musicPage(album) {
 function populateAlbumDisplay(data) {
   const albumSide = document.querySelector('#album-side');
 
+  //clear the album side
   while (albumSide.firstChild) {
     albumSide.removeChild(albumSide.firstChild);
   }
@@ -120,7 +123,6 @@ function populateAlbumDisplay(data) {
 }
 
 function populateArtistDisplay(artistId) {
-  var artistInfo = {};
   fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
       headers: {
         'Authorization': 'Bearer ' + accessToken
@@ -130,8 +132,6 @@ function populateArtistDisplay(artistId) {
       return response.json()
     })
     .then(data => {
-      artistInfo = data;
-      // console.log(data);
       const artistSide = document.querySelector('#artist-side');
       while (artistSide.firstChild) {
         artistSide.removeChild(artistSide.firstChild);
@@ -154,45 +154,22 @@ function populateArtistDisplay(artistId) {
       artistText.appendChild(artistPopularity);
       artistText.appendChild(artistGenres);
 
-      artistArt.src = artistInfo.images[0].url;
-      artistName.innerHTML = artistInfo.name;
-      artistFollowers.innerHTML = artistInfo.followers.total.toLocaleString('en-US') + ' Spotify followers';
-      artistPopularity.innerHTML = artistInfo.popularity + ' popularity';
-      artistGenres.innerHTML = artistInfo.genres.join(', ');
+      artistArt.src = data.images[0].url;
+      artistName.innerHTML = data.name;
+      artistFollowers.innerHTML = data.followers.total.toLocaleString('en-US') + ' Spotify followers';
+      artistPopularity.innerHTML = data.popularity + ' popularity';
+      artistGenres.innerHTML = data.genres.join(', ');
 
       artistSide.appendChild(artistArt);
       artistSide.appendChild(artistText);
 
     })
 
-
-
 }
-
-musicBoxes.forEach(box => {
-
-  box.addEventListener('mouseover', () => {
-    body.style.transition = `all ease 1s`;
-    body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${box.firstChild.getAttribute("src")}`;
-  })
-
-  box.addEventListener('click', () => {
-    musicPage(box.dataset.albumId);
-    document.getElementById("album-display").scrollIntoView()
-
-  })
-});
-
-heroScrollIcon.addEventListener('click', () => {
-  document.getElementById("currentlyListening").scrollIntoView()
-})
-
-const searchBox = document.querySelector('#search-box');
-const searchButton = document.querySelector('#search-button');
-const searchSection = document.querySelector('#search');
 
 function search() {
 
+  //if there are search results, remove them
   if (document.querySelector('#search-results')) {
     const searchResults = document.querySelector('#search-results');
     searchSection.removeChild(searchResults);
@@ -209,7 +186,7 @@ function search() {
     searchSection.appendChild(popup);
     setTimeout(() => {
       searchSection.removeChild(popup);
-    }, 5000);
+    }, 3000);
     return;
   }
 
@@ -229,7 +206,7 @@ function search() {
         noResults.innerHTML = 'No results found!';
         searchResults.appendChild(noResults);
       } else {
-        const topResults = data.albums.items.slice(0, 7);
+        const topResults = data.albums.items.slice(0, 5);
         topResults.forEach(album => {
           const result = document.createElement('li');
           result.classList.add('search-result');
@@ -244,12 +221,29 @@ function search() {
         })
       }
       searchSection.appendChild(searchResults);
-
     })
     .catch(error => {
       console.log(error);
     });
 }
+
+heroScrollIcon.addEventListener('click', () => {
+  document.getElementById("currentlyListening").scrollIntoView()
+})
+
+musicBoxes.forEach(box => {
+
+  box.addEventListener('mouseover', () => {
+    body.style.transition = `all ease 1s`;
+    body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${box.firstChild.getAttribute("src")}`;
+  })
+
+  box.addEventListener('click', () => {
+    musicPage(box.dataset.albumId);
+    document.getElementById("album-display").scrollIntoView()
+
+  })
+});
 
 searchButton.addEventListener('click', () => {
   search();
