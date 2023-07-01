@@ -357,6 +357,27 @@ table {
     font-size: 24px;
 }
 
+#search-results {
+    display: flex;
+    flex-direction: column;
+    /* gap: 16px; */
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 8px;
+    
+}
+
+#search-results>* {
+    text-align: left;
+    font-size: 24px;
+    color: white;
+    padding: 8px;
+}
+
+#search-results>*:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 @keyframes slideInFromBottom {
     0% {
         opacity: 0%;

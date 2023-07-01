@@ -192,8 +192,6 @@ function search() {
     searchSection.removeChild(searchResults);
   }
 
-
-
   const albumInput = document.querySelector('#album-input');
   const artistInput = document.querySelector('#artist-input');
 
@@ -216,8 +214,6 @@ function search() {
     })
     .then(response => response.json())
     .then(data => {
-      // console.log(data)
-      console.log(data.albums.items);
       const searchResults = document.createElement('ul');
       searchResults.id = 'search-results';
 
