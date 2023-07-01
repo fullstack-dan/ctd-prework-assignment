@@ -43,7 +43,7 @@ a {
 html {
   scroll-behavior: smooth;
 }
-/* * { //debugging!
+/* * { 
     background: #000 !important;
     color: #0f0 !important;
     outline: solid #f00 1px !important;
@@ -331,6 +331,30 @@ table {
 .track>* {
     font-size: smaller;
     text-align: left;
+}
+
+#search-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    align-items: center;
+}
+
+#search-box>input {
+    width: 150px;
+    height: 10px;
+    font-size: 16px;
+    padding: 8px;
+    /* border-radius: 5px; */
+    border: 1px solid black;
+}
+
+#search-button {
+    text-decoration: underline;
+    cursor: pointer;
+
+    font-size: 24px;
 }
 
 @keyframes slideInFromBottom {

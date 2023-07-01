@@ -150,7 +150,7 @@ function populateArtistDisplay(artistId) {
 
       artistArt.src = artistInfo.images[0].url;
       artistName.innerHTML = artistInfo.name;
-      artistFollowers.innerHTML = artistInfo.followers.total + ' followers';
+      artistFollowers.innerHTML = artistInfo.followers.total.toLocaleString('en-US') + ' Spotify followers';
       artistPopularity.innerHTML = artistInfo.popularity + ' popularity';
       artistGenres.innerHTML = artistInfo.genres.join(', ');
 
@@ -179,4 +179,76 @@ musicBoxes.forEach(box => {
 
 heroScrollIcon.addEventListener('click', () => {
   document.getElementById("currentlyListening").scrollIntoView()
+})
+
+const searchBox = document.querySelector('#search-box');
+const searchButton = document.querySelector('#search-button');
+const searchSection = document.querySelector('#search');
+
+function search() {
+
+  if (document.querySelector('#search-results')) {
+    const searchResults = document.querySelector('#search-results');
+    searchSection.removeChild(searchResults);
+  }
+
+
+
+  const albumInput = document.querySelector('#album-input');
+  const artistInput = document.querySelector('#artist-input');
+
+  //if either input is empty, display a popup
+  if (albumInput.value === '' || artistInput.value === '') {
+    const popup = document.createElement('div');
+    popup.id = 'popup';
+    popup.innerHTML = 'Enter an album and artist!';
+    searchSection.appendChild(popup);
+    setTimeout(() => {
+      searchSection.removeChild(popup);
+    }, 5000);
+    return;
+  }
+
+  fetch(`https://api.spotify.com/v1/search?q=album:${albumInput.value}+artist:${artistInput.value}&type=album`, {
+      headers: {
+        'Authorization': 'Bearer ' + accessToken
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      // console.log(data)
+      console.log(data.albums.items);
+      const searchResults = document.createElement('ul');
+      searchResults.id = 'search-results';
+
+      if (data.albums.items.length === 0) {
+        const noResults = document.createElement('li');
+        noResults.classList.add('search-result');
+        noResults.innerHTML = 'No results found!';
+        searchResults.appendChild(noResults);
+      } else {
+        const topResults = data.albums.items.slice(0, 7);
+        topResults.forEach(album => {
+          const result = document.createElement('li');
+          result.classList.add('search-result');
+          result.innerHTML = album.name + ' - ' + album.artists[0].name;
+          result.dataset.albumId = album.id;
+          result.addEventListener('click', () => {
+            musicPage(result.dataset.albumId);
+            searchSection.removeChild(searchResults);
+            document.getElementById("album-display").scrollIntoView()
+          })
+          searchResults.appendChild(result);
+        })
+      }
+      searchSection.appendChild(searchResults);
+
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+searchButton.addEventListener('click', () => {
+  search();
 })
