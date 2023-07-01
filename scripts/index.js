@@ -176,13 +176,12 @@ function search() {
   }
 
   const albumInput = document.querySelector('#album-input');
-  const artistInput = document.querySelector('#artist-input');
 
   //if either input is empty, display a popup
-  if (albumInput.value === '' || artistInput.value === '') {
+  if (albumInput.value === '') {
     const popup = document.createElement('div');
     popup.id = 'popup';
-    popup.innerHTML = 'Enter an album and artist!';
+    popup.innerHTML = 'Enter an album name!';
     searchSection.appendChild(popup);
     setTimeout(() => {
       searchSection.removeChild(popup);
@@ -190,7 +189,7 @@ function search() {
     return;
   }
 
-  fetch(`https://api.spotify.com/v1/search?q=album:${albumInput.value}+artist:${artistInput.value}&type=album`, {
+  fetch(`https://api.spotify.com/v1/search?q=album:${albumInput.value}&type=album`, {
       headers: {
         'Authorization': 'Bearer ' + accessToken
       }
@@ -210,7 +209,7 @@ function search() {
         topResults.forEach(album => {
           const result = document.createElement('li');
           result.classList.add('search-result');
-          result.innerHTML = album.name + ' - ' + album.artists[0].name;
+          result.innerHTML = album.name + ' - ' + album.artists[0].name + ' (' + album.release_date.slice(0, 4) + ')';
           result.dataset.albumId = album.id;
           result.addEventListener('click', () => {
             musicPage(result.dataset.albumId);
