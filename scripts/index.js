@@ -79,6 +79,12 @@ function populateAlbumDisplay(data) {
   albumText.id = 'album-text-info';
 
   albumArt.src = data.images[0].url;
+
+  albumArt.addEventListener('mouseover', () => {
+    body.style.transition = `all ease 1s`;
+    body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(${albumArt.getAttribute("src")}`;
+  })
+
   albumTitle.innerHTML = data.name;
   albumArtist.innerHTML = data.artists[0].name;
   albumYear.innerHTML = data.release_date.slice(0, 4);

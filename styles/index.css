@@ -242,6 +242,18 @@ table {
     bottom: -5px;
 }
 
+#album-art {
+    position: relative;
+    top: 0;
+    right: 0;
+    transition: all ease 1s;
+}
+
+#album-art:hover {
+    top: -5px;
+    right: -2px;
+}
+
 #album-side {
     display: flex;
     gap: 24px;
