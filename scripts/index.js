@@ -1,28 +1,35 @@
 const clientId = '7a536f43424e4e1fad43dd3777470cad';
 const clientSecret = '333def59ecae428797f341d934b304fd';
-var accessToken = '';
 
 const authString = `${clientId}:${clientSecret}`;
 const base64AuthString = btoa(authString);
 
-fetch('https://accounts.spotify.com/api/token', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Basic ${base64AuthString}`,
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: 'grant_type=client_credentials'
-  })
-  .then(response => response.json())
-  .then(data => {
-    accessToken = data.access_token;
-  })
-  .catch(error => {
-    console.log(error);
-  });
+async function getAccessToken() {
+    try {
+        let response = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${base64AuthString}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'grant_type=client_credentials'
+        });
+        
+        if (response.ok) {
+            let data = await response.json();
+            return data.access_token;
+        } else {
+            throw new Error('Response failed');
+        }
+    } catch (error) {
+        console.log('Error:', error);
+    }
+}
 
 
-import { searchArtist } from './artists.js';
+import {
+  searchArtist
+} from './artists.js';
 
 
 const body = document.querySelector('body');
@@ -33,7 +40,32 @@ const albumSearchSection = document.querySelector('#album-search');
 const artistSearchButton = document.querySelector('#artist-search-button');
 const heroScrollIcon = document.querySelector('#heroScrollIcon');
 
+document.addEventListener('DOMContentLoaded', (event) => {
+  if (localStorage.getItem('runPopulateAlbum') === 'true') {
+    var data = localStorage.getItem('albumData');
+    data = JSON.parse(data);
+    populateAlbumDisplay(data);
+    const artistSide = document.querySelector('#artist-side');
+    while (artistSide.firstChild) {
+      artistSide.removeChild(artistSide.firstChild);
+    }
+    const expandArtist = document.createElement('div');
+    expandArtist.textContent = 'Learn more about this artist!';
+    expandArtist.id = 'expand-artist';
+    expandArtist.addEventListener('click', () => {
+      populateArtistDisplay(data.artists[0].id);
+    })
+    artistSide.appendChild(expandArtist);
+    albumSearchSection.scrollIntoView({
+      behavior: 'smooth'
+    });
+
+    localStorage.setItem('runPopulateAlbum', 'false');
+  }
+});
+
 function musicPage(album) {
+  getAccessToken().then(accessToken => {
   fetch(`https://api.spotify.com/v1/albums/${album}`, {
       headers: {
         'Authorization': 'Bearer ' + accessToken
@@ -61,6 +93,7 @@ function musicPage(album) {
     .catch(error => {
       console.log(error);
     })
+  })
 
 }
 
@@ -127,6 +160,7 @@ function populateAlbumDisplay(data) {
 }
 
 function populateArtistDisplay(artistId) {
+  getAccessToken().then(accessToken => {
   fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
       headers: {
         'Authorization': 'Bearer ' + accessToken
@@ -159,6 +193,13 @@ function populateArtistDisplay(artistId) {
       artistText.appendChild(artistGenres);
 
       artistArt.src = data.images[0].url;
+
+      artistArt.addEventListener('click', () => {
+        localStorage.setItem('runPopulateArtist', 'true');
+        localStorage.setItem('artistId', data.id);
+        window.location.href = 'artists.html';
+      });
+
       artistName.innerHTML = data.name;
       artistFollowers.innerHTML = data.followers.total.toLocaleString('en-US') + ' Spotify followers';
       artistPopularity.innerHTML = data.popularity + ' popularity';
@@ -168,6 +209,10 @@ function populateArtistDisplay(artistId) {
       artistSide.appendChild(artistText);
 
     })
+    .catch(error => {
+      console.log(error);
+    })
+  })
 
 }
 
@@ -193,6 +238,7 @@ function searchAlbum() {
     return;
   }
 
+  getAccessToken().then(accessToken => {
   fetch(`https://api.spotify.com/v1/search?q=album:${albumInput.value}&type=album`, {
       headers: {
         'Authorization': 'Bearer ' + accessToken
@@ -228,6 +274,7 @@ function searchAlbum() {
     .catch(error => {
       console.log(error);
     });
+  })
 }
 
 heroScrollIcon.addEventListener('click', () => {
@@ -253,13 +300,8 @@ albumSearchButton.addEventListener('click', () => {
 })
 
 artistSearchButton.addEventListener('click', () => {
-  //go to the artists.html page
-  window.onload = function() {
-    searchArtist();
-  };
+  var artistInput = document.getElementById('artist-input').value;
+  localStorage.setItem('runSearchArtist', 'true');
+  localStorage.setItem('artistInput', artistInput);
   window.location.href = 'artists.html';
 })
-
-export {
-  accessToken
-};

@@ -1,28 +1,52 @@
 const clientId = '7a536f43424e4e1fad43dd3777470cad';
 const clientSecret = '333def59ecae428797f341d934b304fd';
-var accessToken = '';
 
 const authString = `${clientId}:${clientSecret}`;
 const base64AuthString = btoa(authString);
 
-fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Basic ${base64AuthString}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'grant_type=client_credentials'
-    })
-    .then(response => response.json())
-    .then(data => {
-        accessToken = data.access_token;
-    })
-    .catch(error => {
-        console.log(error);
-    });
+async function getAccessToken() {
+    try {
+        let response = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${base64AuthString}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'grant_type=client_credentials'
+        });
+        
+        if (response.ok) {
+            let data = await response.json();
+            return data.access_token;
+        } else {
+            throw new Error('Response failed');
+        }
+    } catch (error) {
+        console.log('Error:', error);
+    }
+}
+
 
 const artistSearchSection = document.querySelector('#artist-search');
 const artistSearchButton = document.querySelector('#artist-search-button');
+const artistInput = document.querySelector('#artist-input');
+
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    if (localStorage.getItem('runSearchArtist') === 'true') {
+        var inputValue = localStorage.getItem('artistInput');
+
+        artistInput.value = inputValue;
+        searchArtist();
+
+        localStorage.setItem('runSearchArtist', 'false');
+    } else if (localStorage.getItem('runPopulateArtist') === 'true') {
+        var artistId = localStorage.getItem('artistId');
+        populateArtistDisplay(artistId);
+
+        localStorage.setItem('runPopulateArtist', 'false');
+    }
+});
 
 function searchArtist() {
 
@@ -31,8 +55,6 @@ function searchArtist() {
         const searchResults = document.querySelector('#search-results');
         artistSearchSection.removeChild(searchResults);
     }
-
-    const artistInput = document.querySelector('#artist-input');
 
     //if either input is empty, display a popup
     if (artistInput.value === '') {
@@ -46,6 +68,7 @@ function searchArtist() {
         return;
     }
 
+    getAccessToken().then(accessToken => {
     fetch(`https://api.spotify.com/v1/search?q=artist:${artistInput.value}&type=artist`, {
             headers: {
                 'Authorization': 'Bearer ' + accessToken
@@ -53,8 +76,6 @@ function searchArtist() {
         })
         .then(response => response.json())
         .then(data => {
-
-            console.log(data);
             const searchResults = document.createElement('ul');
             searchResults.id = 'search-results';
 
@@ -83,10 +104,12 @@ function searchArtist() {
         .catch(error => {
             console.log(error);
         });
+    });
 
 }
 
 function populateArtistDisplay(artistId) {
+    getAccessToken().then(accessToken => {
     fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
             headers: {
                 'Authorization': 'Bearer ' + accessToken
@@ -137,6 +160,7 @@ function populateArtistDisplay(artistId) {
                     return response.json()
                 })
                 .then(data => {
+                    console.log(data)
                     const albumsDisplay = document.querySelector('#albums-display');
                     while (albumsDisplay.firstChild) {
                         albumsDisplay.removeChild(albumsDisplay.firstChild);
@@ -168,7 +192,23 @@ function populateArtistDisplay(artistId) {
                         })
 
                         albumArt.addEventListener('click', () => {
-                            
+                            //fetch the album's data
+                            fetch(`https://api.spotify.com/v1/albums/${album.id}`, {
+                                    headers: {
+                                        'Authorization': 'Bearer ' + accessToken
+                                    }
+                                })
+                                .then(response => {
+                                    return response.json()
+                                })
+                                .then(data => {
+                                    localStorage.setItem('runPopulateAlbum', 'true');
+                                    localStorage.setItem('albumData', JSON.stringify(data));
+                                    window.location.href = 'index.html';
+                                })
+                                .catch(error => {
+                                    console.log(error);
+                                });
                         });
 
                         const albumName = document.createElement('h1');
@@ -191,6 +231,11 @@ function populateArtistDisplay(artistId) {
                 });
 
         })
+        .catch(error => {
+            console.log(error);
+        }
+    );
+    });
 
 }
 
@@ -198,4 +243,4 @@ artistSearchButton.addEventListener('click', searchArtist);
 
 export {
     searchArtist
-};
+}
