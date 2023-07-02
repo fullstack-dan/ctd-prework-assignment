@@ -5,32 +5,26 @@ const authString = `${clientId}:${clientSecret}`;
 const base64AuthString = btoa(authString);
 
 async function getAccessToken() {
-    try {
-        let response = await fetch('https://accounts.spotify.com/api/token', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${base64AuthString}`,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'grant_type=client_credentials'
-        });
-        
-        if (response.ok) {
-            let data = await response.json();
-            return data.access_token;
-        } else {
-            throw new Error('Response failed');
-        }
-    } catch (error) {
-        console.log('Error:', error);
+  try {
+    let response = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${base64AuthString}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'grant_type=client_credentials'
+    });
+
+    if (response.ok) {
+      let data = await response.json();
+      return data.access_token;
+    } else {
+      throw new Error('Response failed');
     }
+  } catch (error) {
+    console.log('Error:', error);
+  }
 }
-
-
-import {
-  searchArtist
-} from './artists.js';
-
 
 const body = document.querySelector('body');
 const musicBoxes = document.querySelectorAll('.musicBox');
@@ -66,33 +60,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 function musicPage(album) {
   getAccessToken().then(accessToken => {
-  fetch(`https://api.spotify.com/v1/albums/${album}`, {
-      headers: {
-        'Authorization': 'Bearer ' + accessToken
-      }
-    })
-    .then(response => {
-      return response.json()
-    })
-    .then(data => {
-      populateAlbumDisplay(data);
-
-      //display an option to learn more about the artist
-      const artistSide = document.querySelector('#artist-side');
-      while (artistSide.firstChild) {
-        artistSide.removeChild(artistSide.firstChild);
-      }
-      const expandArtist = document.createElement('div');
-      expandArtist.textContent = 'Learn more about this artist!';
-      expandArtist.id = 'expand-artist';
-      expandArtist.addEventListener('click', () => {
-        populateArtistDisplay(data.artists[0].id);
+    fetch(`https://api.spotify.com/v1/albums/${album}`, {
+        headers: {
+          'Authorization': 'Bearer ' + accessToken
+        }
       })
-      artistSide.appendChild(expandArtist);
-    })
-    .catch(error => {
-      console.log(error);
-    })
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        populateAlbumDisplay(data);
+
+        //display an option to learn more about the artist
+        const artistSide = document.querySelector('#artist-side');
+        while (artistSide.firstChild) {
+          artistSide.removeChild(artistSide.firstChild);
+        }
+        const expandArtist = document.createElement('div');
+        expandArtist.textContent = 'Learn more about this artist!';
+        expandArtist.id = 'expand-artist';
+        expandArtist.addEventListener('click', () => {
+          populateArtistDisplay(data.artists[0].id);
+        })
+        artistSide.appendChild(expandArtist);
+      })
+      .catch(error => {
+        console.log(error);
+      })
   })
 
 }
@@ -161,57 +155,57 @@ function populateAlbumDisplay(data) {
 
 function populateArtistDisplay(artistId) {
   getAccessToken().then(accessToken => {
-  fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
-      headers: {
-        'Authorization': 'Bearer ' + accessToken
-      }
-    })
-    .then(response => {
-      return response.json()
-    })
-    .then(data => {
-      const artistSide = document.querySelector('#artist-side');
-      while (artistSide.firstChild) {
-        artistSide.removeChild(artistSide.firstChild);
-      }
+    fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
+        headers: {
+          'Authorization': 'Bearer ' + accessToken
+        }
+      })
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        const artistSide = document.querySelector('#artist-side');
+        while (artistSide.firstChild) {
+          artistSide.removeChild(artistSide.firstChild);
+        }
 
-      const artistArt = document.createElement('img');
-      artistArt.id = 'artist-art';
+        const artistArt = document.createElement('img');
+        artistArt.id = 'artist-art';
 
-      const artistText = document.createElement('div');
+        const artistText = document.createElement('div');
 
-      const artistName = document.createElement('h1');
-      const artistFollowers = document.createElement('p');
-      const artistPopularity = document.createElement('p');
-      const artistGenres = document.createElement('p');
+        const artistName = document.createElement('h1');
+        const artistFollowers = document.createElement('p');
+        const artistPopularity = document.createElement('p');
+        const artistGenres = document.createElement('p');
 
-      artistText.id = 'artist-text-info';
+        artistText.id = 'artist-text-info';
 
-      artistText.appendChild(artistName);
-      artistText.appendChild(artistFollowers);
-      artistText.appendChild(artistPopularity);
-      artistText.appendChild(artistGenres);
+        artistText.appendChild(artistName);
+        artistText.appendChild(artistFollowers);
+        artistText.appendChild(artistPopularity);
+        artistText.appendChild(artistGenres);
 
-      artistArt.src = data.images[0].url;
+        artistArt.src = data.images[0].url;
 
-      artistArt.addEventListener('click', () => {
-        localStorage.setItem('runPopulateArtist', 'true');
-        localStorage.setItem('artistId', data.id);
-        window.location.href = 'artists.html';
-      });
+        artistArt.addEventListener('click', () => {
+          localStorage.setItem('runPopulateArtist', 'true');
+          localStorage.setItem('artistId', data.id);
+          window.location.href = 'artists.html';
+        });
 
-      artistName.innerHTML = data.name;
-      artistFollowers.innerHTML = data.followers.total.toLocaleString('en-US') + ' Spotify followers';
-      artistPopularity.innerHTML = data.popularity + ' popularity';
-      artistGenres.innerHTML = data.genres.join(', ');
+        artistName.innerHTML = data.name;
+        artistFollowers.innerHTML = data.followers.total.toLocaleString('en-US') + ' Spotify followers';
+        artistPopularity.innerHTML = data.popularity + ' popularity';
+        artistGenres.innerHTML = data.genres.join(', ');
 
-      artistSide.appendChild(artistArt);
-      artistSide.appendChild(artistText);
+        artistSide.appendChild(artistArt);
+        artistSide.appendChild(artistText);
 
-    })
-    .catch(error => {
-      console.log(error);
-    })
+      })
+      .catch(error => {
+        console.log(error);
+      })
   })
 
 }
@@ -239,41 +233,41 @@ function searchAlbum() {
   }
 
   getAccessToken().then(accessToken => {
-  fetch(`https://api.spotify.com/v1/search?q=album:${albumInput.value}&type=album`, {
-      headers: {
-        'Authorization': 'Bearer ' + accessToken
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      const searchResults = document.createElement('ul');
-      searchResults.id = 'search-results';
+    fetch(`https://api.spotify.com/v1/search?q=album:${albumInput.value}&type=album`, {
+        headers: {
+          'Authorization': 'Bearer ' + accessToken
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const searchResults = document.createElement('ul');
+        searchResults.id = 'search-results';
 
-      if (data.albums.items.length === 0) {
-        const noResults = document.createElement('li');
-        noResults.classList.add('search-result');
-        noResults.innerHTML = 'No results found!';
-        searchResults.appendChild(noResults);
-      } else {
-        const topResults = data.albums.items.slice(0, 5);
-        topResults.forEach(album => {
-          const result = document.createElement('li');
-          result.classList.add('search-result');
-          result.innerHTML = album.name + ' - ' + album.artists[0].name + ' (' + album.release_date.slice(0, 4) + ')';
-          result.dataset.albumId = album.id;
-          result.addEventListener('click', () => {
-            musicPage(result.dataset.albumId);
-            albumSearchSection.removeChild(searchResults);
-            document.getElementById("album-display").scrollIntoView()
+        if (data.albums.items.length === 0) {
+          const noResults = document.createElement('li');
+          noResults.classList.add('search-result');
+          noResults.innerHTML = 'No results found!';
+          searchResults.appendChild(noResults);
+        } else {
+          const topResults = data.albums.items.slice(0, 5);
+          topResults.forEach(album => {
+            const result = document.createElement('li');
+            result.classList.add('search-result');
+            result.innerHTML = album.name + ' - ' + album.artists[0].name + ' (' + album.release_date.slice(0, 4) + ')';
+            result.dataset.albumId = album.id;
+            result.addEventListener('click', () => {
+              musicPage(result.dataset.albumId);
+              albumSearchSection.removeChild(searchResults);
+              document.getElementById("album-display").scrollIntoView()
+            })
+            searchResults.appendChild(result);
           })
-          searchResults.appendChild(result);
-        })
-      }
-      albumSearchSection.appendChild(searchResults);
-    })
-    .catch(error => {
-      console.log(error);
-    });
+        }
+        albumSearchSection.appendChild(searchResults);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   })
 }
 
