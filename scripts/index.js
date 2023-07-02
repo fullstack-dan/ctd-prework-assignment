@@ -71,7 +71,6 @@ function musicPage(album) {
       .then(data => {
         populateAlbumDisplay(data);
 
-        //display an option to learn more about the artist
         const artistSide = document.querySelector('#artist-side');
         while (artistSide.firstChild) {
           artistSide.removeChild(artistSide.firstChild);
@@ -94,7 +93,6 @@ function musicPage(album) {
 function populateAlbumDisplay(data) {
   const albumSide = document.querySelector('#album-side');
 
-  //clear the album side
   while (albumSide.firstChild) {
     albumSide.removeChild(albumSide.firstChild);
   }
@@ -212,7 +210,6 @@ function populateArtistDisplay(artistId) {
 
 function searchAlbum() {
 
-  //if there are search results, remove them
   if (document.querySelector('#search-results')) {
     const searchResults = document.querySelector('#search-results');
     albumSearchSection.removeChild(searchResults);
@@ -220,7 +217,6 @@ function searchAlbum() {
 
   const albumInput = document.querySelector('#album-input');
 
-  //if either input is empty, display a popup
   if (albumInput.value === '') {
     const popup = document.createElement('div');
     popup.id = 'popup';

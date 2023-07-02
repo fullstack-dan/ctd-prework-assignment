@@ -50,13 +50,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 function searchArtist() {
 
-    //if there are search results, remove them
     if (document.querySelector('#search-results')) {
         const searchResults = document.querySelector('#search-results');
         artistSearchSection.removeChild(searchResults);
     }
 
-    //if either input is empty, display a popup
     if (artistInput.value === '') {
         const popup = document.createElement('div');
         popup.id = 'popup';
@@ -150,7 +148,6 @@ function populateArtistDisplay(artistId) {
                 artistDisplay.appendChild(artistArt);
                 artistDisplay.appendChild(artistText);
 
-                //display the artists most recent albums to the page using the artist-albums div
                 fetch(`https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=album&limit=5`, {
                         headers: {
                             'Authorization': 'Bearer ' + accessToken
@@ -166,19 +163,16 @@ function populateArtistDisplay(artistId) {
                             albumsDisplay.removeChild(albumsDisplay.firstChild);
                         }
 
-                        //remove the header if it exists
                         if (document.querySelector('#artist-albums-header')) {
                             document.querySelector('#artist-albums').removeChild(document.querySelector('#artist-albums-header'));
                         }
 
-                        //add a header to the artist-albums div
                         const artistAlbumsHeader = document.createElement('h1');
                         artistAlbumsHeader.innerHTML = 'Recent Albums';
                         artistAlbumsHeader.id = 'artist-albums-header';
                         document.querySelector('#artist-albums').insertBefore(artistAlbumsHeader, document.querySelector('#artist-albums').firstChild);
 
                         data.items.forEach(album => {
-                            //wrap the album art in a div and add an h1 element with the album name and a p element with the release year
 
                             const albumInfo = document.createElement('div');
                             albumInfo.classList.add('album-info');
@@ -192,7 +186,6 @@ function populateArtistDisplay(artistId) {
                             })
 
                             albumArt.addEventListener('click', () => {
-                                //fetch the album's data
                                 fetch(`https://api.spotify.com/v1/albums/${album.id}`, {
                                         headers: {
                                             'Authorization': 'Bearer ' + accessToken
