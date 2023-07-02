@@ -1,3 +1,0 @@
-function albumPage(album, artist) {
-    
-}

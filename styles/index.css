@@ -345,7 +345,16 @@ table {
     text-align: left;
 }
 
-#search-box {
+#album-search, #artist-search {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+#album-search-box, #artist-search-box {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
@@ -362,7 +371,7 @@ table {
     border: 1px solid black;
 }
 
-#search-button {
+#search-button, #artist-search-button {
     text-decoration: underline;
     cursor: pointer;
 

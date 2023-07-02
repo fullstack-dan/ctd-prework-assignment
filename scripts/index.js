@@ -22,11 +22,15 @@ fetch('https://accounts.spotify.com/api/token', {
   });
 
 
+import { searchArtist } from './artists.js';
+
+
 const body = document.querySelector('body');
 const musicBoxes = document.querySelectorAll('.musicBox');
 const searchBox = document.querySelector('#search-box');
-const searchButton = document.querySelector('#search-button');
-const searchSection = document.querySelector('#search');
+const albumSearchButton = document.querySelector('#search-button');
+const albumSearchSection = document.querySelector('#album-search');
+const artistSearchButton = document.querySelector('#artist-search-button');
 const heroScrollIcon = document.querySelector('#heroScrollIcon');
 
 function musicPage(album) {
@@ -167,12 +171,12 @@ function populateArtistDisplay(artistId) {
 
 }
 
-function search() {
+function searchAlbum() {
 
   //if there are search results, remove them
   if (document.querySelector('#search-results')) {
     const searchResults = document.querySelector('#search-results');
-    searchSection.removeChild(searchResults);
+    albumSearchSection.removeChild(searchResults);
   }
 
   const albumInput = document.querySelector('#album-input');
@@ -182,9 +186,9 @@ function search() {
     const popup = document.createElement('div');
     popup.id = 'popup';
     popup.innerHTML = 'Enter an album name!';
-    searchSection.appendChild(popup);
+    albumSearchSection.appendChild(popup);
     setTimeout(() => {
-      searchSection.removeChild(popup);
+      albumSearchSection.removeChild(popup);
     }, 3000);
     return;
   }
@@ -213,13 +217,13 @@ function search() {
           result.dataset.albumId = album.id;
           result.addEventListener('click', () => {
             musicPage(result.dataset.albumId);
-            searchSection.removeChild(searchResults);
+            albumSearchSection.removeChild(searchResults);
             document.getElementById("album-display").scrollIntoView()
           })
           searchResults.appendChild(result);
         })
       }
-      searchSection.appendChild(searchResults);
+      albumSearchSection.appendChild(searchResults);
     })
     .catch(error => {
       console.log(error);
@@ -244,6 +248,18 @@ musicBoxes.forEach(box => {
   })
 });
 
-searchButton.addEventListener('click', () => {
-  search();
+albumSearchButton.addEventListener('click', () => {
+  searchAlbum();
 })
+
+artistSearchButton.addEventListener('click', () => {
+  //go to the artists.html page
+  window.onload = function() {
+    searchArtist();
+  };
+  window.location.href = 'artists.html';
+})
+
+export {
+  accessToken
+};
