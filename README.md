@@ -6,4 +6,4 @@ The repository has a GitHub Pages deployment; this should be all you need to ope
 
 Further down, you can also search for the name of an artist and view their most recent albums.  
 
-GitHub Pages: https://github.com/fullstack-dan/ctd-prework-assignment
+GitHub Pages: [https://github.com/fullstack-dan/ctd-prework-assignment](https://fullstack-dan.github.io/ctd-prework-assignment/)https://fullstack-dan.github.io/ctd-prework-assignment/
